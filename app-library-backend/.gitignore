@@ -1,0 +1,14 @@
+# Directories
+node_modules/
+dist/
+pgdata/ 
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Docker compose 
+docker-compose.yml

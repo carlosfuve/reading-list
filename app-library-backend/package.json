@@ -1,0 +1,57 @@
+{
+    "name": "app-library",
+    "version": "1.0.0",
+    "description": "Una app para añadir libros que se desean leer en un futuro",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "node dist/server",
+        "build": "rimraf dist && tsc",
+        "validate": "npm run build && npm run start",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "book",
+        "library"
+    ],
+    "author": "Carlos Fulgencio Velasco",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/cors": "2.8.17",
+        "@types/express": "5.0.0",
+        "@types/node": "22.13.4",
+        "@types/pg": "8.11.11",
+        "@typescript-eslint/eslint-plugin": "8.24.0",
+        "@typescript-eslint/parser": "8.24.0",
+        "eslint-config-standard": "17.1.0",
+        "nodemon": "3.1.9",
+        "standard": "17.1.2"
+    },
+    "eslintConfig": {
+        "extends": [
+            "standard",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+            "@typescript-eslint"
+        ],
+        "rules": {
+            "semi": [
+                "error",
+                "always"
+            ],
+            "indent": "off",
+            "space-before-function-paren": "off"
+        }
+    },
+    "dependencies": {
+        "cors": "2.8.5",
+        "dotenv": "16.4.7",
+        "eslint": "8.57.1",
+        "express": "4.21.2",
+        "pg": "8.13.3",
+        "sequelize": "6.37.5",
+        "ts-node": "10.9.2",
+        "zod": "3.24.2"
+    }
+}

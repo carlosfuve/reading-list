@@ -1,0 +1,71 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+import db from '../init';
+import { Optional, DataTypes, Model } from 'sequelize';
+import IBook from '../../modules/book/domain/IBook';
+
+export interface BookInput extends Optional<IBook, 'id'> { };
+export interface BookOutput extends Required<IBook> { };
+
+// Add createAt and updateAt??
+class Book extends Model<IBook, BookInput> implements IBook {
+    public id!: string;
+    public title!: string;
+    public pages!: number;
+    public genre!: string;
+    public cover!: string;
+    public year!: number;
+    public ISBN!: string;
+    public available!: boolean;
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
+    public readonly deletedAt!: Date;
+}
+
+Book.init({
+    id: {
+        type: DataTypes.STRING,
+        primaryKey: true
+    },
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    pages: {
+        type: DataTypes.INTEGER,
+        validate: {
+            min: 50,
+            max: 1500
+        }
+    },
+    genre: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    cover: {
+        type: DataTypes.STRING,
+        validate: {
+            isUrl: true
+        }
+    },
+    year: {
+        type: DataTypes.INTEGER,
+        validate: {
+            min: 1950
+        }
+    },
+    ISBN: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    available: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
+    }
+}, {
+    timestamps: true,
+    sequelize: db,
+    tableName: 'books'
+});
+
+export default Book;
