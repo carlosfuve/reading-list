@@ -1,4 +1,3 @@
-// import { infoBookFilter } from '../../../../preprocessing';
 import IBook from '../../domain/IBook';
 import IBookRepository from '../../domain/IBookRepository';
 import Book from '../../../../database/models/Book';
@@ -15,7 +14,7 @@ class BookRepository implements IBookRepository {
 
     async getBookById(idBook: string): Promise<IBook | null> {
         try {
-            return await Book.findByPk(idBook); // infoBookFilter.filter(book => book.id === idBook)[0];
+            return await Book.findByPk(idBook);
         } catch {
             return null;
         }
@@ -23,7 +22,7 @@ class BookRepository implements IBookRepository {
 
     async getBookByGenre(genre: string): Promise<IBook[] | null> {
         try {
-            return Book.findAll({ where: { genre } }); // infoBookFilter.filter(book => book.genre === genre);
+            return Book.findAll({ where: { genre } });
         } catch {
             return null;
         }
@@ -45,7 +44,7 @@ class BookRepository implements IBookRepository {
                         [Op.gt]: pages // Encuentra libros con más de pages
                     }
                 }
-            }); // infoBookFilter.filter(book => book.pages > pages);
+            });
         } catch {
             return null;
         }
@@ -62,6 +61,22 @@ class BookRepository implements IBookRepository {
             const result = await Book.update(newBook, { where: { id: idBook } });
             if (!result[0]) return null;
             return newBook;
+        } catch {
+            return null;
+        }
+    }
+
+    async createNewBook(ibook: IBook): Promise<IBook | null> {
+        try {
+            const idBook: string = ibook.title.toLocaleLowerCase().replace(/ /g, '-');
+            const existsInDB: IBook | null = await this.getBookById(idBook);
+            if (existsInDB) throw new Error('Duplicated id');
+            const newBook: IBook = {
+                id: idBook,
+                available: true,
+                ...ibook
+            };
+            return await Book.create(newBook);
         } catch {
             return null;
         }

@@ -6,7 +6,6 @@ import IBook from '../../modules/book/domain/IBook';
 export interface BookInput extends Optional<IBook, 'id'> { };
 export interface BookOutput extends Required<IBook> { };
 
-// Add createAt and updateAt??
 class Book extends Model<IBook, BookInput> implements IBook {
     public id!: string;
     public title!: string;
@@ -29,6 +28,9 @@ Book.init({
     title: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: true
+        },
         unique: true
     },
     pages: {
@@ -40,32 +42,45 @@ Book.init({
     },
     genre: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
     },
     cover: {
         type: DataTypes.STRING,
         validate: {
-            isUrl: true
+            isUrl: true,
+            notEmpty: true
         }
     },
     year: {
         type: DataTypes.INTEGER,
         validate: {
-            min: 1950
+            min: 1950,
+            max: 2025
         }
     },
     ISBN: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        } // ,
+        // unique: true
     },
     available: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: false,
+        defaultValue: true
     }
 }, {
     timestamps: true,
     sequelize: db,
-    tableName: 'books'
+    tableName: 'books',
+    defaultScope: {
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
+    }
 });
 
 export default Book;

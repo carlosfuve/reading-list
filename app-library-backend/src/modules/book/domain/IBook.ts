@@ -1,12 +1,12 @@
 interface IBook {
-    id: string,
+    id?: string,
     title: string,
     pages: number,
     genre: string,
     cover: string,
     year: number,
     ISBN: string,
-    available: boolean,
+    available?: boolean,
     createdAt?: Date,
     updatedAt?: Date,
     deletedAt?: Date

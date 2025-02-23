@@ -13,7 +13,7 @@ class BookUseCaseMoveBook implements IBookUseCaseMoveBook {
         private readonly repository: IBookRepository
     ) { }
 
-    async moveBook(idBook: string): Promise<IBook | null> { // TODO
+    async moveBook(idBook: string): Promise<IBook | null> {
         // Use Case Validations
         if (this.validationService.isEmpty(idBook)) throw new ValidationError('The id is a required field');
 
