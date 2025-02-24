@@ -66,8 +66,8 @@ Book.init({
         allowNull: false,
         validate: {
             notEmpty: true
-        } // ,
-        // unique: true
+        },
+        unique: true
     },
     available: {
         type: DataTypes.BOOLEAN,

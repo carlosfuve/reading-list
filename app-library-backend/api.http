@@ -2,28 +2,24 @@
 GET http://localhost:3000/books
 
 ###
-GET http://localhost:3000/books/el-señor de los anillos
+GET http://localhost:3000/books/hola5
 
 ###
-PATCH  http://localhost:3000/books/el-señor de los anillos
+PATCH  http://localhost:3000/books/a
 
 ### 
-POST  http://localhost:3000/books
+POST http://localhost:3000/books
 Content-Type: application/json
 
 {
-    "title": "HOLA3",
+    "title": "Los patos de goma",
     "pages": 1200,
     "genre": "Hola",
-    "cover": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1566425108i/33.jpg",
+    "cover": "http://nanjsla.com",
     "synopsis": "Una aventura épica en un mundo de fantasía llamado la Tierra Media.",
     "year": 1980,
-    "ISBN": "978-0618640158",
-    "author": {
-        "name": "J.R.R. Tolkien",
-        "otherBooks": [
-            "El Hobbit",
-            "El Silmarillion"
-        ]
-    }
+    "ISBN": "9788781-9901"
 }
+
+###
+DELETE http://localhost:3000/books/los-patos-de-goma

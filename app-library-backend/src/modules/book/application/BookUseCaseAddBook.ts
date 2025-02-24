@@ -8,7 +8,7 @@ class BookUseCaseAddBook implements IBookUseCaseAddBook {
         private readonly repository: IBookRepository
     ) { }
 
-    addBook(book: IBook): Promise<IBook | null> { // TODO: Añadir validaciones
+    async addBook(book: IBook): Promise<IBook | null> { // TODO: Añadir validaciones
         const newBook: Promise<IBook | null> = this.repository.createNewBook(book);
         return newBook;
     }

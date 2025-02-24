@@ -7,7 +7,8 @@ interface IBookRepository {
     getBookByGenre(genre: string): Promise<IBook[] | null>,
     getMinPages(pages: number): Promise<IBook[] | null>,
     updateAvalible(idBook: string): Promise<IBook | null>,
-    createNewBook(ibook: IBook): Promise<IBook | null>
+    createNewBook(ibook: IBook): Promise<IBook | null>,
+    deleteBook(idBook: string): Promise<boolean | null>
 }
 
 export default IBookRepository;
