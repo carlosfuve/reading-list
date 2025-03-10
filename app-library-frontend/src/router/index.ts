@@ -5,7 +5,7 @@ const router = createRouter({
         {
             path: '/',
             name: 'landing',
-            component: () => import('../components/Landing.vue')
+            component: () => import('../views/Landing.vue')
         }
     ],
     history: createWebHistory(import.meta.env.BASE_URL) // TODO: Revisar lo que hace
