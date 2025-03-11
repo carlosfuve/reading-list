@@ -1,8 +1,7 @@
 <template>
     <div class="containerMainInfo">
-
-        <h1 class="book-disp" style="background-color: red;"> {{ librosDisp.length }} libros disponibles</h1>
-        <h3 v-if="librosLectura.length > 0" style="background-color: red;"> {{ librosLectura.length }} en la lista de lectura</h3>
+        <h1 class="book-disp" > {{ filterDisp.length }} libros disponibles</h1>
+        <h3 v-if="librosLectura.length > 0" > {{ librosLectura.length }} en la lista de lectura</h3>
 
         <div class="filtros">
             <label class="filtro-label">
@@ -19,11 +18,10 @@
         </div>
 
         <section class="libros">
-            <article v-for="book in genreDisp" :key="book.ISBN" class="art-libro">
-                <!-- AÑADIR BOTON PARA CAMBIAR A LA LISTA DE LECTURAS-->
-                <div style="display: flex; flex-direction: row; gap:10px; margin-bottom: 3px;">
+            <article v-for="book in filterDisp" :key="book.ISBN" class="art-libro">
+                <div class="title-book">
                     <h4>{{ book.title }}</h4>
-                    <button>+</button>
+                    <button @click="changeAvailable(book.title)">+</button>
                 </div>
                 <img style="width: 100px;" :src="book.cover" :alt="book.ISBN">
             </article>
@@ -32,20 +30,28 @@
 
 
     <div class="lista-lectura">
-        LISTA DE LECTURA
+        <h2><strong>Lista de lectura</strong></h2>    
+        <section>
+            <article v-for="book in librosLectura" :key="book.ISBN">
+                <div class="title-book">
+                    <h4>{{ book.title }}</h4>
+                    <button @click="changeAvailable(book.title)">-</button>
+                </div>
+                <img style="width: 100px;" :src="book.cover" :alt="book.ISBN">
+            </article>
+        </section>
      </div>
 </template>
 
 <script lang="ts">
-import axios from 'axios'
 import type IBook from '@/interfaces/IBook';
 import {loadData, allGenres} from '@/utils/loadBooks';
 
 export default{
     data() {
         return {
-            librosDisp: [] as IBook[],
-            genreDisp: [] as IBook[],
+            books: [] as IBook[],
+            filterDisp: [] as IBook[],
             librosLectura: [] as IBook[],
             genres: [] as string[],
             selectedGenre: 'All' as string,
@@ -55,28 +61,40 @@ export default{
     },
     methods: {
         loadBooks(){
-            /*
-            axios.get('http://localhost:3000/books')
-            .then( response => {  this.librosDisp = response.data; }
-            ).catch(err => { console.log(err) })
-            */
+           loadData()
+           .then( response => {  
+                this.books = response
+                this.librosLectura = this.books.filter((book: IBook) => !book.available);
+                this.filterDisp = this.books.filter((book: IBook) => book.available);
 
-           loadData().then( response => {  this.librosDisp = response;
-            this.genreDisp = response;
-           })
-           allGenres().then(response => { this.genres = response; })
+                localStorage.setItem("booksList", JSON.stringify(this.librosLectura));
+            })
+
+           allGenres()
+           .then(response => { this.genres = response; })
         },
         filterGenre(){
             if (this.selectedGenre === 'All') {
-                this.genreDisp = this.librosDisp;
+                this.filterDisp = this.books.filter(book => book.available)
+                this.librosLectura = this.books.filter(book => !book.available)
             }
             else {
-                this.genreDisp = this.librosDisp.filter(book => book.genre === this.selectedGenre)
+                this.filterDisp = this.books.filter(book => book.available && book.genre === this.selectedGenre)
+                this.librosLectura = this.books.filter(book => !book.available && book.genre === this.selectedGenre)
+
             }
 
         },
         filterPages(){
-            this.genreDisp = this.librosDisp.filter(book => book.pages > this.numPages)
+            this.filterDisp = this.books.filter(book => book.available && book.pages > this.numPages)
+        },
+        changeAvailable(title:string){
+            const bookToModify = this.books.find(book => book.title === title);
+            if (bookToModify) {
+                bookToModify.available = !bookToModify.available; 
+            }
+
+            this.filterGenre()
         }
     },
     mounted() {
@@ -98,7 +116,7 @@ export default{
     display: flex;
     flex-direction: row;
     gap: 20%;
-    background-color: green;
+    margin-bottom: 20px;
 }
 
 .filtro-label{
@@ -118,8 +136,18 @@ export default{
 }
 
 .lista-lectura {
+    display: flex;
+    flex-direction: column;
+    width: 50vw; /* Ocupa el 70% de la pantalla */
+    gap: 10px;
     margin-top: 10%;
-    margin-left: 10%;
+}
+
+.title-book{
+    display: flex;
+    flex-direction: row;
+    gap:10px; 
+    margin-bottom: 3px;
 }
 
 </style>
