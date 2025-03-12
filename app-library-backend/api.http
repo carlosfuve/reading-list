@@ -1,8 +1,8 @@
 ###
-GET http://localhost:3000/books
+GET http://localhost:3000/books?pages=10000&genre=Fantasía
 
 ###
-GET http://localhost:3000/books/hola5
+GET http://localhost:3000/genre
 
 ###
 PATCH  http://localhost:3000/books/a

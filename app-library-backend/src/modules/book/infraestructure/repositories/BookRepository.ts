@@ -28,15 +28,7 @@ class BookRepository implements IBookRepository {
         }
     }
 
-    async getBookByTitle(title: string): Promise<IBook | null> {
-        try {
-            return Book.findOne({ where: { title } }); // infoBookFilter.filter(book => book.title === title)[0];
-        } catch {
-            return null;
-        }
-    }
-
-    async getMinPages(pages: number): Promise<IBook[] | null> {
+    async getBookByPages(pages: number): Promise<IBook[] | null> {
         try {
             return Book.findAll({
                 where: {
@@ -45,6 +37,29 @@ class BookRepository implements IBookRepository {
                     }
                 }
             });
+        } catch {
+            return null;
+        }
+    }
+
+    async getBookByGenrePages(genre: string, pages: number): Promise<IBook[] | null> {
+        try {
+            return Book.findAll({
+                where: {
+                    pages: {
+                        [Op.gt]: pages // Encuentra libros con más de pages
+                    },
+                    genre
+                }
+            });
+        } catch {
+            return null;
+        }
+    }
+
+    async getBookByTitle(title: string): Promise<IBook | null> {
+        try {
+            return Book.findOne({ where: { title } }); // infoBookFilter.filter(book => book.title === title)[0];
         } catch {
             return null;
         }

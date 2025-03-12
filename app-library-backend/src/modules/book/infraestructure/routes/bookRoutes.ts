@@ -24,8 +24,9 @@ const bookDeleteController = new BookDeleteController(bookDeleteUseCase);
 
 const router = Router();
 
-router.get('/', (req, res) => { bookController.getBooks(req, res); });
+router.get('/', (req, res) => { bookController.getBooks(req, res); }); // ACTUALIZAR EL GENRE, PONER QUE ES NUMERO
 router.post('/', (req, res) => { bookAddBookController.run(req, res); });
+// TODO: CREATE MULTIPLE BOOKS
 router.get('/:idBook', (req, res) => { bookController.getBookId(req, res); });
 router.patch('/:idBook', (req, res) => { bookMoveBookController.run(req, res); });
 router.delete('/:idBook', (req, res) => { bookDeleteController.run(req, res); });
