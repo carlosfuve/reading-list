@@ -3,7 +3,6 @@ import IBook from './IBook';
 interface IBookRepository {
     getAll(): Promise<IBook[] | null>,
     getBookById(idBook: string): Promise<IBook | null>,
-    getBookByTitle(title: string): Promise<IBook | null>, // ELIMINAR??
     getBookByGenre(genre: string): Promise<IBook[] | null>,
     getBookByPages(pages: number): Promise<IBook[] | null>,
     getBookByGenrePages(genre: string, pages: number): Promise<IBook[] | null>,

@@ -4,7 +4,7 @@ import genreRoutes from './modules/genre/infraestructure/routes/genreRoutes';
 
 const router = Router();
 
-router.use('/books', bookRoutes);
+router.use('/book', bookRoutes);
 router.use('/genre', genreRoutes);
 router.use('/*', (_: Request, res: Response) => { res.status(404).json({ code: 404, msg: 'Not found.' }); });
 

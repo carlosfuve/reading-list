@@ -1,0 +1,18 @@
+###
+GET http://localhost:3000/genre
+
+###
+POST http://localhost:3000/genre
+Content-Type: application/json
+
+{
+    "genres": ["Fantasía", "Terror", "Ciencia ficción", "Apocalipsis Zombie", "Inventado2"]
+}
+
+###
+DELETE http://localhost:3000/genre
+Content-Type: application/json
+
+{
+    "idGenre": 32
+}

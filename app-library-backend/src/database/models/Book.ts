@@ -10,7 +10,7 @@ class Book extends Model<IBook, BookInput> implements IBook {
     public id!: string;
     public title!: string;
     public pages!: number;
-    public genre!: string;
+    public genre!: number;
     public cover!: string;
     public year!: number;
     public ISBN!: string;
@@ -41,11 +41,8 @@ Book.init({
         }
     },
     genre: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     cover: {
         type: DataTypes.STRING,

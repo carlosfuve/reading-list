@@ -2,11 +2,20 @@ import IBook from '../../domain/IBook';
 import IBookRepository from '../../domain/IBookRepository';
 import Book from '../../../../database/models/Book';
 import { Op } from 'sequelize';
+// import Genre from '../../../../database/models/Genre';
 
 class BookRepository implements IBookRepository {
     async getAll(): Promise<IBook[] | null> {
         try {
-            return Book.findAll();
+            const allBooks = await Book.findAll({
+                /* include: [{
+                    model: Genre,
+                    attributes: ['name'] // Qué columnas de la tabla `Genre` quieres traer
+                }], */
+                raw: true
+            });
+            console.log(allBooks);
+            return allBooks;
         } catch {
             return null;
         }
@@ -57,25 +66,19 @@ class BookRepository implements IBookRepository {
         }
     }
 
-    async getBookByTitle(title: string): Promise<IBook | null> {
-        try {
-            return Book.findOne({ where: { title } }); // infoBookFilter.filter(book => book.title === title)[0];
-        } catch {
-            return null;
-        }
-    }
-
     async updateAvalible(idBook: string): Promise<IBook | null> {
         try {
             const existsInDB: IBook | null = await this.getBookById(idBook);
             if (!existsInDB) throw new Error('Book does not exists');
-            const newBook: IBook = {
-                ...existsInDB,
-                available: !existsInDB.available
-            };
-            const result = await Book.update(newBook, { where: { id: idBook } });
-            if (!result[0]) return null;
-            return newBook;
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const [_numberAffectedRows, updatedBooks] = await Book.update(
+                { available: !existsInDB.available },
+                { where: { id: idBook }, returning: true } // Devuelve los datos actualizados
+            );
+
+            if (updatedBooks.length === 0) throw new Error('Update failed');
+            return updatedBooks[0];
         } catch {
             return null;
         }
@@ -91,7 +94,8 @@ class BookRepository implements IBookRepository {
                 available: true,
                 ...ibook
             };
-            return await Book.create(newBook);
+            const result = await Book.create(newBook);
+            return result;
         } catch {
             return null;
         }

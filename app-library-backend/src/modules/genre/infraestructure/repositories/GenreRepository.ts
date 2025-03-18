@@ -11,9 +11,29 @@ class GenreRepository implements IGenreRepository {
         }
     }
 
+    async getGenreId(name: string): Promise<number | null> {
+        try {
+            const result = await Genre.findOne({ where: { name } });
+            if (!result) throw Error('Genre not find');
+            return result.id;
+        } catch {
+            return null;
+        }
+    }
+
+    async getGenreName(id: number): Promise<string | null> {
+        try {
+            const result = await Genre.findByPk(id);
+            if (!result) throw Error('Genre not find');
+            return result.name;
+        } catch {
+            return null;
+        }
+    }
+
     async createGenre(name: string): Promise<IGenre | null> {
         try {
-            return Genre.create({ name });
+            return await Genre.create({ name });
         } catch {
             return null;
         }
@@ -21,19 +41,21 @@ class GenreRepository implements IGenreRepository {
 
     async createMultipleGenres(nameGenres: string[]): Promise<IGenre[] | null> {
         const genresCreated: IGenre[] = [];
-        for (const name in nameGenres) {
+        for (const name of nameGenres) {
             const result = await this.createGenre(name);
-            if (result) genresCreated.push(result);
+            if (result) {
+                genresCreated.push(result);
+            }
         }
-        return genresCreated;
+        return genresCreated.map(({ id, name }) => ({ id, name }));
     }
 
     async deleteGenre(id: number): Promise<boolean | null> {
         try {
-            await Genre.destroy({
+            const result = await Genre.destroy({
                 where: { id }
             });
-            return true;
+            return result > 0;
         } catch {
             return null;
         }

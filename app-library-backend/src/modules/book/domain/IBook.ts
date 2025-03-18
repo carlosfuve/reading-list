@@ -2,7 +2,7 @@ interface IBook {
     id?: string,
     title: string,
     pages: number,
-    genre: string,
+    genre: number,
     cover: string,
     year: number,
     ISBN: string,

@@ -18,9 +18,8 @@ class BookUseCaseMoveBook implements IBookUseCaseMoveBook {
         if (this.validationService.isEmpty(idBook)) throw new ValidationError('The id is a required field');
 
         // Use Case logic
-        const book: IBook | null = await this.repository.updateAvalible(idBook);
-        if (book == null) throw new Error('Book not found');
-        return book;
+        const result: Promise<IBook | null> = this.repository.updateAvalible(idBook);
+        return result;
     }
 }
 

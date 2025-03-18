@@ -1,7 +1,7 @@
 import IBook from './IBook';
 
-interface IBookUseCaseAddBook {
+interface IBookUseCaseCreateBook {
     addBook(book: IBook): Promise<IBook | null>
 }
 
-export default IBookUseCaseAddBook;
+export default IBookUseCaseCreateBook;
