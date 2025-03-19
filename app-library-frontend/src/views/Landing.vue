@@ -10,9 +10,9 @@
             </label>
             <label class="filtro-label">
                 Filtrar por género: 
-                <select id="genres" v-model="selectedGenre" @change="filterGenre">
-                    <option :value="'All'">Todos</option>
-                    <option v-for="genre in genres" :value="genre">{{ genre }}</option>
+                <select id="genres" v-model="selectedGenreId" @change="filterGenre">
+                    <option :value="-1">Todos</option>
+                    <option v-for="genre in genres" :key="genre.id" :value="genre.id">{{ genre.name }}</option>
                 </select>
             </label>
         </div>
@@ -21,7 +21,7 @@
             <article v-for="book in filterDisp" :key="book.ISBN" class="art-libro">
                 <div class="title-book">
                     <h4>{{ book.title }}</h4>
-                    <button @click="changeAvailable(book.title)">+</button>
+                    <button @click="changeAvailable(book.id)">+</button>
                 </div>
                 <img style="width: 100px;" :src="book.cover" :alt="book.ISBN">
             </article>
@@ -35,7 +35,7 @@
             <article v-for="book in librosLectura" :key="book.ISBN">
                 <div class="title-book">
                     <h4>{{ book.title }}</h4>
-                    <button @click="changeAvailable(book.title)">-</button>
+                    <button @click="changeAvailable(book.id)">-</button>
                 </div>
                 <img style="width: 100px;" :src="book.cover" :alt="book.ISBN">
             </article>
@@ -45,60 +45,64 @@
 
 <script lang="ts">
 import type IBook from '@/interfaces/IBook';
-import {loadData, allGenres} from '@/utils/loadBooks';
+import type IGenre from '@/interfaces/IGenre';
+import {getAllGenres, getAllBooks, changeAvailableBook, getFilterByPages, getFilterByGenre} from '@/utils/loadBooks';
 
 export default{
     data() {
         return {
-            books: [] as IBook[],
             filterDisp: [] as IBook[],
             librosLectura: [] as IBook[],
-            genres: [] as string[],
-            selectedGenre: 'All' as string,
+            genres: [] as IGenre[],
+            selectedGenreId: -1 as number,
+            selectedGenreName: 'Todos' as string,
             numPages: 0 as number
 
         };
     },
     methods: {
-        loadBooks(){
-           loadData()
-           .then( response => {  
-                this.books = response
-                this.librosLectura = this.books.filter((book: IBook) => !book.available);
-                this.filterDisp = this.books.filter((book: IBook) => book.available);
-
-                localStorage.setItem("booksList", JSON.stringify(this.librosLectura));
+        loadGenres(){
+            getAllGenres().then(response  => {
+                this.genres = response.data;
             })
-
-           allGenres()
-           .then(response => { this.genres = response; })
         },
-        filterGenre(){
-            if (this.selectedGenre === 'All') {
-                this.filterDisp = this.books.filter(book => book.available)
-                this.librosLectura = this.books.filter(book => !book.available)
+        getGenreNameSelected(){
+            const selectedGenre = this.genres.find(genre => genre.id === this.selectedGenreId);
+            if (selectedGenre) {
+                this.selectedGenreName = selectedGenre.name;
+            } else {
+                this.selectedGenreName = 'Todos';
             }
+        },
+        async loadBooks(){
+            const books: IBook[] = await getAllBooks()
+            this.filterDisp = books.filter((book: IBook) => book.available);
+            this.librosLectura = books.filter((book: IBook) => !book.available);
+        },
+        async filterGenre(){
+            this.getGenreNameSelected()
+            if (this.selectedGenreId === -1) { this.loadBooks(); }
             else {
-                this.filterDisp = this.books.filter(book => book.available && book.genre === this.selectedGenre)
-                this.librosLectura = this.books.filter(book => !book.available && book.genre === this.selectedGenre)
-
+                this.getGenreNameSelected()
+                const books: IBook[] = await getFilterByGenre(this.selectedGenreId) 
+                console.log(this.selectedGenreName)
+                this.filterDisp = books.filter(book => book.available)
+                this.librosLectura = books.filter(book => !book.available)
             }
 
         },
-        filterPages(){
-            this.filterDisp = this.books.filter(book => book.available && book.pages > this.numPages)
+        async filterPages(){
+            this.filterDisp = await getFilterByPages(this.numPages)
         },
-        changeAvailable(title:string){
-            const bookToModify = this.books.find(book => book.title === title);
-            if (bookToModify) {
-                bookToModify.available = !bookToModify.available; 
-            }
-
+        async changeAvailable(idBook:string | undefined){
+            if (idBook) await changeAvailableBook(idBook)
+            
             this.filterGenre()
         }
     },
     mounted() {
         this.loadBooks();
+        this.loadGenres();
     },
 };
 </script>

@@ -1,30 +1,32 @@
-import type IBook from "@/interfaces/IBook";
+import axios from "axios";
 
-/*
-axios.get('http://localhost:3000/books')
-.then( response => {  this.librosDisp = response.data; }
-).catch(err => { console.log(err) })
-*/
+const API_URL: string = 'http://localhost:3000/'
 
-export async function loadData() {
-    const response = await fetch("../../books.json");
-    const data = await response.json();
-
-    const libroLecturaStorage = JSON.parse(localStorage.getItem("booksList") ?? "[]");
-
-    const result = data.library.map((book: { book: any }) => {
-        const bookData: IBook = { ...book.book };
-        bookData.available = !libroLecturaStorage.some((book: IBook) => book.id === bookData.id);
-        bookData.id = bookData.title.toLowerCase().replace(/\s+/g, '-');
-
-        return bookData;
-    });
+export function getAllGenres() {
+    const result = axios.get(API_URL + 'genre')
     return result
 }
 
-export async function allGenres() {
-    const books = await loadData();
-    const genres: string[] = books.map((book: IBook) => book.genre)
-    const genresWithOutDuplicates: string[] = [...new Set(genres)]
-    return genresWithOutDuplicates
+export async function getAllBooks() {
+    const result = await axios.get(API_URL + 'book')
+    return result.data
+}
+
+export async function changeAvailableBook(idBook: string) {
+    const result = await axios.patch(API_URL + `book/${idBook}`)
+    return result.data
+}
+
+export async function getFilterByPages(pages: number) {
+    const result = await axios.get(API_URL + 'book', {
+        params: { pages }
+    })
+    return result.data
+}
+
+export async function getFilterByGenre(genre: number) {
+    const result = await axios.get(API_URL + 'book', {
+        params: { genre }
+    })
+    return result.data
 }
