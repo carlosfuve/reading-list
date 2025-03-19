@@ -1,5 +1,5 @@
 ###
-GET http://localhost:3000/book
+GET http://localhost:3000/book?pages=1000&?genre=1
 
 ###
 POST http://localhost:3000/book

@@ -2,6 +2,7 @@
 import db from '../init';
 import { Optional, DataTypes, Model } from 'sequelize';
 import IGenre from '../../modules/genre/domain/IGenre';
+import Book from './Book';
 
 export interface GenreInput extends Optional<IGenre, 'id'> { };
 export interface GenreOutput extends Required<IGenre> { };
@@ -12,6 +13,10 @@ class Genre extends Model<IGenre, GenreInput> implements IGenre {
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
     public readonly deletedAt!: Date;
+
+    static associate() {
+        this.hasMany(Book, { foreignKey: 'genreId' });
+    }
 }
 
 Genre.init({
@@ -37,5 +42,7 @@ Genre.init({
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
     }
 });
+
+// Genre.hasMany(Book, { foreignKey: 'genreId' });
 
 export default Genre;

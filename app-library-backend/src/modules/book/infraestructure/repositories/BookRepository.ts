@@ -1,22 +1,37 @@
 import IBook from '../../domain/IBook';
 import IBookRepository from '../../domain/IBookRepository';
 import Book from '../../../../database/models/Book';
-import { Op } from 'sequelize';
-// import Genre from '../../../../database/models/Genre';
+import { Op, Sequelize } from 'sequelize';
+import Genre from '../../../../database/models/Genre';
+import IGenreRepository from '../../../genre/domain/IGenreRepository';
+import GenreRepository from '../../../genre/infraestructure/repositories/GenreRepository';
 
 class BookRepository implements IBookRepository {
+    private genreRepository: IGenreRepository = new GenreRepository();
+
     async getAll(): Promise<IBook[] | null> {
         try {
             const allBooks = await Book.findAll({
-                /* include: [{
-                    model: Genre,
-                    attributes: ['name'] // Qué columnas de la tabla `Genre` quieres traer
-                }], */
+                attributes: [
+                    'id',
+                    'title',
+                    'pages',
+                    'cover',
+                    'year',
+                    'ISBN',
+                    'available',
+                    [Sequelize.col('Genre.name'), 'genre']
+                ],
+                include: [
+                    {
+                        model: Genre,
+                        attributes: []
+                    }],
                 raw: true
             });
-            console.log(allBooks);
             return allBooks;
-        } catch {
+        } catch (error) {
+            console.log(error);
             return null;
         }
     }
@@ -29,9 +44,27 @@ class BookRepository implements IBookRepository {
         }
     }
 
-    async getBookByGenre(genre: string): Promise<IBook[] | null> {
+    async getBookByGenre(genre: number): Promise<IBook[] | null> {
         try {
-            return Book.findAll({ where: { genre } });
+            return Book.findAll({
+                where: { genre },
+                attributes: [
+                    'id',
+                    'title',
+                    'pages',
+                    'cover',
+                    'year',
+                    'ISBN',
+                    'available',
+                    [Sequelize.col('Genre.name'), 'genre']
+                ],
+                include: [
+                    {
+                        model: Genre,
+                        attributes: []
+                    }],
+                raw: true
+            });
         } catch {
             return null;
         }
@@ -44,14 +77,30 @@ class BookRepository implements IBookRepository {
                     pages: {
                         [Op.gt]: pages // Encuentra libros con más de pages
                     }
-                }
+                },
+                attributes: [
+                    'id',
+                    'title',
+                    'pages',
+                    'cover',
+                    'year',
+                    'ISBN',
+                    'available',
+                    [Sequelize.col('Genre.name'), 'genre']
+                ],
+                include: [
+                    {
+                        model: Genre,
+                        attributes: []
+                    }],
+                raw: true
             });
         } catch {
             return null;
         }
     }
 
-    async getBookByGenrePages(genre: string, pages: number): Promise<IBook[] | null> {
+    async getBookByGenrePages(genre: number, pages: number): Promise<IBook[] | null> {
         try {
             return Book.findAll({
                 where: {
@@ -59,7 +108,23 @@ class BookRepository implements IBookRepository {
                         [Op.gt]: pages // Encuentra libros con más de pages
                     },
                     genre
-                }
+                },
+                attributes: [
+                    'id',
+                    'title',
+                    'pages',
+                    'cover',
+                    'year',
+                    'ISBN',
+                    'available',
+                    [Sequelize.col('Genre.name'), 'genre']
+                ],
+                include: [
+                    {
+                        model: Genre,
+                        attributes: []
+                    }],
+                raw: true
             });
         } catch {
             return null;
@@ -89,6 +154,8 @@ class BookRepository implements IBookRepository {
             const idBook: string = ibook.title.toLocaleLowerCase().replace(/ /g, '-');
             const existsInDB: IBook | null = await this.getBookById(idBook);
             if (existsInDB) throw new Error('Duplicated id');
+            const genreExists: string | null = await this.genreRepository.getGenreName(ibook.genre);
+            if (!genreExists) throw new Error('Genre does not exists in DB');
             const newBook: IBook = {
                 id: idBook,
                 available: true,

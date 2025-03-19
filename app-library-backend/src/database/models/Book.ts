@@ -2,6 +2,7 @@
 import db from '../init';
 import { Optional, DataTypes, Model } from 'sequelize';
 import IBook from '../../modules/book/domain/IBook';
+import Genre from './Genre';
 
 export interface BookInput extends Optional<IBook, 'id'> { };
 export interface BookOutput extends Required<IBook> { };
@@ -42,7 +43,11 @@ Book.init({
     },
     genre: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: 'genre',
+            key: 'id'
+        }
     },
     cover: {
         type: DataTypes.STRING,
@@ -79,5 +84,7 @@ Book.init({
         attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
     }
 });
+
+Book.belongsTo(Genre, { foreignKey: 'genre' });
 
 export default Book;

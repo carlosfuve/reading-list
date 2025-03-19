@@ -15,57 +15,27 @@ class BookController extends ExpressResponse {
     }
 
     public async getBooks(req: Request, res: Response): Promise<Response> { // TODO: Change to join
-        const { genre, pages } = req.query as Record<string, string>;
+        const genre = req.query.genre as string;
+        const pages = req.query.pages as string;
         const numPages = pages ? parseInt(pages, 10) : 0;
+        const numGenre = genre ? parseInt(genre, 10) : 0;
         try {
             if (genre && pages) {
-                const filterBooks = await this.repository.getBookByGenrePages(genre, numPages);
+                const filterBooks = await this.repository.getBookByGenrePages(numGenre, numPages);
                 if (!filterBooks) throw Error;
-                const result = filterBooks.map(async book => {
-                    const genreName = await this.genreRepository.getGenreName(book.genre);
-                    if (!genreName) throw Error();
-                    return {
-                        ...book,
-                        genre: genreName
-                    };
-                });
-                return this.sendJsonResponse(res, 200, result);
+                return this.sendJsonResponse(res, 200, filterBooks);
             } else if (genre) {
-                const bookByGenre = await this.repository.getBookByGenre(genre);
+                const bookByGenre = await this.repository.getBookByGenre(numGenre);
                 if (!bookByGenre) throw Error;
-                const result = bookByGenre.map(async book => {
-                    const genreName = await this.genreRepository.getGenreName(book.genre);
-                    if (!genreName) throw Error();
-                    return {
-                        ...book,
-                        genre: genreName
-                    };
-                });
-                return this.sendJsonResponse(res, 200, result);
+                return this.sendJsonResponse(res, 200, bookByGenre);
             } else if (pages) {
                 const bookByPages = await this.repository.getBookByPages(numPages);
                 if (!bookByPages) throw Error;
-                const result = bookByPages.map(async book => {
-                    const genreName = await this.genreRepository.getGenreName(book.genre);
-                    if (!genreName) throw Error();
-                    return {
-                        ...book,
-                        genre: genreName
-                    };
-                });
-                return this.sendJsonResponse(res, 200, result);
+                return this.sendJsonResponse(res, 200, bookByPages);
             } else {
                 const allBooks = await this.repository.getAll();
                 if (!allBooks) throw Error;
-                const result = await Promise.all(allBooks.map(async book => {
-                    const genreName = await this.genreRepository.getGenreName(book.genre);
-                    if (!genreName) throw Error();
-                    return {
-                        ...book,
-                        genre: genreName
-                    };
-                }));
-                return this.sendJsonResponse(res, 200, result);
+                return this.sendJsonResponse(res, 200, allBooks);
             }
         } catch {
             return this.sendError(res, NotFoundError);
